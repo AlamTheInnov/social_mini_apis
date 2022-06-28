@@ -29,3 +29,11 @@ Route::group(['prefix' => 'auth'], function () {
         });
     });
 });
+
+Route::group(['prefix' => 'user'], function () {
+    Route::group(['middleware' => 'auth:sanctum'], function() {
+        Route::group(['middleware' => 'ability:user'], function() {
+            Route::resource('posts', 'PostController');
+        });
+    });
+});

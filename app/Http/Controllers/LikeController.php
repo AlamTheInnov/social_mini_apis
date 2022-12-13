@@ -35,7 +35,37 @@ class LikeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'post_id' => 'required',
+        ]);
+
+        $user = $request->user();
+
+        $like = Like::where('user_id', $user->id)
+                    ->where('post_id', $request->post_id)
+                    ->first();
+
+        if ($like) {
+            $like->delete();
+            return response()->json([
+                'message' => 'You unliked a Post',
+            ], 200);
+        } else {
+            $like = new Like();
+            $like->user_id = $user->id;
+            $like->post_id = $request->post_id;
+
+            if ($like->save()) {
+                return response()->json([
+                    'message' => 'You liked a Post',
+                    'like' => $like->load('user')
+                ], 201);
+            } else {
+                return response()->json([
+                    'message' => 'Some error occurred, please try again'
+                ], 500);
+            }
+        }
     }
 
     /**

@@ -35,7 +35,26 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'post_id' => 'required',
+            'content' => 'required|string|max:255',
+        ]);
+
+        $comment = new Comment();
+        $comment->post_id = $request->post_id;
+        $comment->user_id = $request->user()->id;
+        $comment->content = $request->content;
+
+        if ($comment->save()) {
+            return response()->json([
+                'message' => 'Comment successful',
+                'comment' => $comment->load('user')
+            ], 201);
+        } else {
+            return response()->json([
+                'message' => 'Some error occurred, please try again'
+            ], 500);
+        }
     }
 
     /**

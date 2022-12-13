@@ -34,6 +34,8 @@ Route::group(['prefix' => 'user'], function () {
     Route::group(['middleware' => 'auth:sanctum'], function() {
         Route::group(['middleware' => 'ability:user'], function() {
             Route::resource('posts', 'PostController');
+            Route::resource('comments', 'CommentController');
+            Route::post('like-unlike-post', 'LikeController@store');
         });
     });
 });

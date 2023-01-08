@@ -35,7 +35,41 @@ class FollowerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required',
+        ]);
+
+        $user = $request->user();
+
+        $follower = Follower::where('user_id', $request->user_id)
+                            ->where('following_id', $user->id)
+                            ->first();
+
+        if (!$follower) {
+            $follower = new Follower();
+            $follower->user_id = $request->user_id;
+            $follower->following_id = $user->id;
+
+            if ($follower->save()) {
+                return response()->json([
+                    'message' => 'You are now following this user',
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Something went wrong following this user, try again'
+                ], 500);
+            }
+        } else {
+            if ($follower->delete()) {
+                return response()->json([
+                    'message' => 'You unfollowed this user'
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Something went wrong, please try again'
+                ], 500);
+            }
+        }
     }
 
     /**

@@ -36,6 +36,8 @@ Route::group(['prefix' => 'user'], function () {
             Route::resource('posts', 'PostController');
             Route::resource('comments', 'CommentController');
             Route::post('like-unlike-post', 'LikeController@store');
+            Route::post('follow-unfollow-user', 'FollowerController@store');
+            Route::get('feeds', 'PostController@index');
         });
     });
 });

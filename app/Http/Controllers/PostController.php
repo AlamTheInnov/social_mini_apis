@@ -12,9 +12,20 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $user = $request->user();
+        $feeds = Post::with('user')
+                    ->withCount('likes', 'comments')
+                    ->whereHas('user.followers', function($q) use($user) {
+                        $q->where('following_id', $user->id);
+                    })
+                    ->orWhere('visibility', 'public')
+                    ->paginate(5);
+
+        return response()->json([
+            'feeds' => $feeds
+        ], 200);
     }
 
     /**
